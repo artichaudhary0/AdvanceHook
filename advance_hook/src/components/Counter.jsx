@@ -12,9 +12,10 @@ useSelector : USed in counter component to access the redux store state.
 useDispatch : Used in counter component to dispatch redux actions.
 */
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import {useSelector, useDispatch}  from "react-redux";
 import { decrement, increment } from "../Slices/CounterSlice";
+import { useTheme } from "../context/ThemeContext";
 
 
 function Counter() {
@@ -27,7 +28,8 @@ const count = useSelector(state=>state.counter.value)
 const dispatch = useDispatch()
 
 
-// useContext hook (Custom hook) : getting theme context
+// useContext hook (Custom hook) :
+const {state : {isDark,fontSize}} = useTheme();
 
 
 // useCallback hook - memoized callback function 
@@ -42,22 +44,27 @@ const handleDecrement = useCallback(()=>{
 
 
 // useMemo hook : memoized value of calculation
+const doubleCount = useMemo(()=>{
+    console.log("double count")
+    return count * 2
+},[count])
 
 
+// dynamic style 
 const style = {
-    backgroundColor : '#fff' ,
+    backgroundColor : isDark ? "black": "White" ,
     padding : "20px",
     borderRadius : "8px",
-    fontSize : "1.2rem",
-    color : "black"
+    fontSize : fontSize === "large" ? "1.2rem":"1rem",
+    color : isDark ? "white" : "black"
 }
 
 
   return (
     <div style={style}>
         <h2>Counter Component</h2>
-        <p>Current Count : {0}</p>
-        <p>Double Count (Memoized) : {2}</p>
+        <p>Current Count : {count}</p>
+        <p >Double Count (Memoized) : {doubleCount}</p>
 
         <button onClick={handleIncrement}>
             Increment
